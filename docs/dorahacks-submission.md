@@ -7,7 +7,7 @@
 **Build logo:** `web/public/logo.png` (480×480 PNG)
 
 **Vision (one line):**
-Payment links settled in native USDC on Arc: a merchant shares a link, the payer settles in one click with no token approval, and the money lands in the merchant's wallet with one-block finality.
+An open invoice primitive for Arc: any wallet, app, or AI agent can issue and settle invoices in native USDC against one verified contract. Today it is a Stripe-style payment link with one-click, approval-free settlement and an on-chain receipt. Next it becomes the rail that lets agents bill and pay each other on Arc.
 
 **Category:** Crypto / Web3
 
@@ -59,4 +59,12 @@ https://explorer.arc.io/address/0xB36f4fB23402bCe6293818c9cAb3Eee00e1D5AfD
 3. Go to https://arc-invoice-two.vercel.app, create your own invoice, and open its link.
 
 **What's next**
-Gasless payment via EIP-3009 `receiveWithAuthorization` on Arc's USDC, x402 support so agents can settle invoices automatically, batch payouts via Multicall3, and EURC invoices through StableFX.
+ArcInvoice is built to become invoicing rails for Arc rather than a pay button. Invoices are the unit of B2B money movement, and Arc is the first chain where the invoice, the money, and the gas are all the same asset, which makes machine-to-machine billing practical.
+
+Roadmap, in order:
+1. Agent settlement (x402 and EIP-3009). An invoice link doubles as an x402 payment challenge, and agents settle it with a signed `receiveWithAuthorization` on Arc's USDC, so no agent needs gas or a UI. I have built AI agent infrastructure and merchant onboarding systems before and this is the piece I am most interested in shipping.
+2. Hosted API and SDK. Create invoices from a server without a wallet click, subscribe to paid and cancelled receipts derived from the contract events, and drop a hosted checkout into any app.
+3. Batch payouts and multi-item invoices via Multicall3, and EURC invoices through StableFX for cross-currency billing.
+4. Apply to the Circle Grant Program with the agent settlement milestone as the first deliverable.
+
+The contract is deliberately minimal and holds no funds between transactions, so each step above is additive and does not require a migration.

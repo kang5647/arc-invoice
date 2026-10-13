@@ -110,9 +110,15 @@ cast call $C "getInvoice(uint256)((address,uint96,uint64,uint64,uint8,address,ui
 
 Total gas for all of the above: about 0.025 USDC.
 
-## Future
+## Where this goes
 
-Memo-tagged batch payouts via Multicall3, gasless pay via EIP-3009 `receiveWithAuthorization` on Arc's USDC, x402 integration so agents can settle invoices automatically, and EURC invoices via StableFX.
+ArcInvoice is meant to become invoicing rails for Arc, not just a pay button. Invoices are the unit of B2B money movement, and Arc is the first chain where the invoice, the money and the gas are the same asset, which makes machine-to-machine billing practical.
+
+1. **Agent settlement.** An invoice link doubles as an x402 payment challenge; agents settle with a signed EIP-3009 `receiveWithAuthorization` on Arc's USDC, so no agent needs gas or a UI.
+2. **Hosted API and SDK.** Create invoices from a server, subscribe to receipts derived from contract events, embed the checkout anywhere.
+3. **Batch and multi-currency.** Multicall3 payouts, EURC invoices through StableFX.
+
+The contract is minimal and holds no funds between transactions, so each step is additive.
 
 ## License
 
