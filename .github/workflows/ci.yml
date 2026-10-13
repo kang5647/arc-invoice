@@ -1,0 +1,25 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: foundry-rs/foundry-toolchain@v1
+      - run: forge test -vv
+        working-directory: contracts
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm, cache-dependency-path: web/pnpm-lock.yaml }
+      - run: pnpm install --frozen-lockfile
+        working-directory: web
+      - run: pnpm build
+        working-directory: web
+        env:
+          NEXT_PUBLIC_ARC_NETWORK: mainnet
+          NEXT_PUBLIC_CONTRACT_ADDRESS: "0xB36f4fB23402bCe6293818c9cAb3Eee00e1D5AfD"

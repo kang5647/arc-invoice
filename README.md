@@ -5,6 +5,22 @@
 - Live app: https://arc-invoice-two.vercel.app
 - Network: Arc mainnet (chain ID 5042) · contract: [`0xB36f4fB23402bCe6293818c9cAb3Eee00e1D5AfD`](https://explorer.arc.io/address/0xB36f4fB23402bCe6293818c9cAb3Eee00e1D5AfD)
 - Testnet deployment (chain ID 5042002): [`0xB36f4fB23402bCe6293818c9cAb3Eee00e1D5AfD`](https://explorer.testnet.arc.io/address/0xB36f4fB23402bCe6293818c9cAb3Eee00e1D5AfD)
+- Built for [Arc Microgrants](https://dorahacks.io/hackathon/arc-microgrants) · [![CI](https://github.com/kang5647/arc-invoice/actions/workflows/ci.yml/badge.svg)](https://github.com/kang5647/arc-invoice/actions/workflows/ci.yml)
+
+## For reviewers: 60-second flow
+
+1. **See a real mainnet payment.** Open https://arc-invoice-two.vercel.app/pay/1: invoice #1 was paid on Arc mainnet with 0.25 USDC. The receipt links to the payer and to the contract's events on the explorer.
+2. **Pay one yourself.** Open https://arc-invoice-two.vercel.app/pay/2, connect a wallet holding a little USDC on Arc (the app adds the network), and click Pay. One transaction, no approval, about 0.011 USDC all in.
+3. **Create your own.** Go to https://arc-invoice-two.vercel.app, click Create invoice, open the link it gives you.
+4. **Verify on-chain.** Contract source is verified on [explorer.arc.io](https://explorer.arc.io/address/0xB36f4fB23402bCe6293818c9cAb3Eee00e1D5AfD?tab=contract). All mainnet transactions are listed in [docs/DEPLOYMENTS.md](docs/DEPLOYMENTS.md).
+
+## Screenshots
+
+| Checkout (open invoice) | Receipt (paid invoice) |
+|---|---|
+| ![Checkout](docs/screenshots/checkout.png) | ![Receipt](docs/screenshots/receipt.png) |
+
+![Dashboard](docs/screenshots/dashboard.png)
 
 ## What it does
 
@@ -24,7 +40,7 @@ Every step emits an event, and native USDC moves also emit Arc's system `Transfe
 | EIP-7708 native Transfer logs | Explorers show the USDC movement without the contract doing extra work. |
 | 20 gwei base fee on an 18-decimal unit | A payment costs about 0.0013 USDC in gas. |
 
-## Architecture
+## Repository layout
 
 ```
 contracts/            Foundry
@@ -36,6 +52,8 @@ web/                  Next.js 16 + wagmi 3 + viem 2, no backend
   src/app/pay/[id]/        public pay page with share link and receipt
   src/lib/config.ts        chain selection via NEXT_PUBLIC_ARC_NETWORK
 ```
+
+Also: [`docs/DEPLOYMENTS.md`](docs/DEPLOYMENTS.md) (addresses, tx log), [`docs/dorahacks-submission.md`](docs/dorahacks-submission.md) (submission text), [`docs/ArcInvoice.standard-input.json`](docs/ArcInvoice.standard-input.json) (verification input), `.github/workflows/ci.yml` (forge tests + web build on every push).
 
 Reads use the public Circle RPC and the contract's own index (`merchantInvoices`, `getInvoices`), which sidesteps Arc's 10,000-block `eth_getLogs` limit. Writes go through the connected injected wallet (MetaMask, Rabby, etc.).
 
@@ -91,12 +109,6 @@ cast call $C "getInvoice(uint256)((address,uint96,uint64,uint64,uint8,address,ui
 | Create invoice #2 (0.01 USDC, open for reviewers) | [0xf1965c…d27a](https://explorer.arc.io/tx/0xf1965c6a39b793d6708c626d1f8799ae5b5ef85e42eb445da393a9d6debfd27a) |
 
 Total gas for all of the above: about 0.025 USDC.
-
-## 60-second reviewer flow
-
-1. Open https://arc-invoice-two.vercel.app/pay/1 to see a paid invoice and its receipt.
-2. Connect a wallet on Arc mainnet (the app adds the network), create a 0.01 USDC invoice, open its link, pay it. Gas plus amount is about a cent.
-3. Click the explorer link on the confirmation to see the `InvoicePaid` event and the native USDC transfer.
 
 ## Future
 
