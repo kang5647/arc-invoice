@@ -8,12 +8,15 @@ export function ConnectButton() {
   const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
   const { switchChain, isPending: switching } = useSwitchChain();
-  if (!isConnected)
+  if (!isConnected) {
+    const c = connectors[0];
+    if (!c) return <a className="btn" href="https://metamask.io/download" target="_blank" rel="noreferrer">Install a wallet</a>;
     return (
-      <button className="btn" disabled={isPending} onClick={() => connect({ connector: connectors[0] })}>
+      <button className="btn" disabled={isPending} onClick={() => connect({ connector: c })}>
         {isPending ? "Connecting…" : "Connect wallet"}
       </button>
     );
+  }
   if (chainId !== chain.id)
     return (
       <button className="btn btn-warn" disabled={switching} onClick={() => switchChain({ chainId: chain.id })}>
