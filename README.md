@@ -3,7 +3,7 @@
 **Payment links settled in native USDC on Arc.** A merchant creates an invoice, shares a link, and the payer settles it in a single transaction. No token approval, no second gas asset, final in one block.
 
 - Live app: https://arc-invoice-two.vercel.app
-- Network: Arc mainnet (chain ID 5042) · contract: `MAINNET_ADDRESS` (verified on [explorer.arc.io](https://explorer.arc.io))
+- Network: Arc mainnet (chain ID 5042) · contract: [`0xB36f4fB23402bCe6293818c9cAb3Eee00e1D5AfD`](https://explorer.arc.io/address/0xB36f4fB23402bCe6293818c9cAb3Eee00e1D5AfD)
 - Testnet deployment (chain ID 5042002): [`0xB36f4fB23402bCe6293818c9cAb3Eee00e1D5AfD`](https://explorer.testnet.arc.io/address/0xB36f4fB23402bCe6293818c9cAb3Eee00e1D5AfD)
 
 ## What it does
@@ -61,12 +61,12 @@ cd contracts && forge test -vv
 # deploy (needs a wallet with a little USDC on Arc; PRIVATE_KEY in ../.env)
 forge script script/Deploy.s.sol --rpc-url https://rpc.mainnet.arc.io --broadcast \
   --with-gas-price 20100000000 --priority-gas-price 1000000000
-forge verify-contract <ADDR> src/ArcInvoice.sol:ArcInvoice --chain-id 5042 \
+forge verify-contract 0xB36f4fB23402bCe6293818c9cAb3Eee00e1D5AfD src/ArcInvoice.sol:ArcInvoice --chain-id 5042 \
   --verifier blockscout --verifier-url https://explorer.arc.io/api/
 
 # frontend
 cd ../web && pnpm install
-echo "NEXT_PUBLIC_ARC_NETWORK=mainnet\nNEXT_PUBLIC_CONTRACT_ADDRESS=<ADDR>" > .env.local
+echo "NEXT_PUBLIC_ARC_NETWORK=mainnet\nNEXT_PUBLIC_CONTRACT_ADDRESS=0xB36f4fB23402bCe6293818c9cAb3Eee00e1D5AfD" > .env.local
 pnpm dev
 ```
 
@@ -75,7 +75,7 @@ Arc wallet settings: RPC `https://rpc.mainnet.arc.io`, chain ID `5042`, symbol `
 ## Reproduce an on-chain payment from the CLI
 
 ```bash
-C=<ADDR>; R=https://rpc.mainnet.arc.io
+C=0xB36f4fB23402bCe6293818c9cAb3Eee00e1D5AfD; R=https://rpc.mainnet.arc.io
 cast send $C "createInvoice(uint96,uint64,string)" 1000000000000000000 0 "Coffee" --private-key $MERCHANT_KEY -r $R --gas-price 20100000000 --priority-gas-price 1000000000
 cast send $C "pay(uint256)" 1 --value 1000000000000000000 --private-key $PAYER_KEY -r $R --gas-price 20100000000 --priority-gas-price 1000000000
 cast call $C "getInvoice(uint256)((address,uint96,uint64,uint64,uint8,address,uint64,string))" 1 -r $R
@@ -83,7 +83,14 @@ cast call $C "getInvoice(uint256)((address,uint96,uint64,uint64,uint8,address,ui
 
 ## Mainnet transactions
 
-MAINNET_TXS
+| Action | Transaction |
+|---|---|
+| Deploy `ArcInvoice` | [0xcd0670…b749](https://explorer.arc.io/tx/0xcd06708bb3ee5425bb4db086ee212efabd355891a12ff7a889f496f2be24b749) |
+| Create invoice #1 (0.25 USDC, "Arc Microgrants demo · coffee") | [0x40c38e…7d28](https://explorer.arc.io/tx/0x40c38eceecd8c975467bbf39e2d300fe17e2087ef52ac44c74dd58d650657d28) |
+| Pay invoice #1 from a second wallet | [0xac7ccc…f3e4](https://explorer.arc.io/tx/0xac7cccd2ad45ae362f385dc2808ac5c3fd260c19aa64b3879b27a5b8cf18f3e4) |
+| Create invoice #2 (0.01 USDC, open for reviewers) | [0xf1965c…d27a](https://explorer.arc.io/tx/0xf1965c6a39b793d6708c626d1f8799ae5b5ef85e42eb445da393a9d6debfd27a) |
+
+Total gas for all of the above: about 0.025 USDC.
 
 ## 60-second reviewer flow
 

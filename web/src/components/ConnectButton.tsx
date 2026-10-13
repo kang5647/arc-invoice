@@ -13,7 +13,7 @@ export function ConnectButton() {
     if (!c) return <a className="btn" href="https://metamask.io/download" target="_blank" rel="noreferrer">Install a wallet</a>;
     return (
       <button className="btn" disabled={isPending} onClick={() => connect({ connector: c })}>
-        {isPending ? "Connecting…" : "Connect wallet"}
+        {isPending ? <><span className="spin" />Connecting</> : "Connect wallet"}
       </button>
     );
   }
@@ -25,7 +25,7 @@ export function ConnectButton() {
     );
   return (
     <button className="btn btn-ghost" onClick={() => disconnect()} title="Disconnect">
-      {short(address!)}
+      <span className="dot" /> <span className="mono">{short(address!)}</span>
     </button>
   );
 }
